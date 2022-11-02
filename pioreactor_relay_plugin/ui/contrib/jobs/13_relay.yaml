@@ -10,5 +10,5 @@ published_settings:
     label: Relay # human readable name
     description: Turn the relay on/off
     type: boolean  # one of numeric, boolean, text
-    default: true
+    default: false
     display: true # true to display on the /Pioreactors card
