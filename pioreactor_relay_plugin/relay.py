@@ -12,7 +12,7 @@ from pioreactor.whoami import get_unit_name
 class Relay(BackgroundJobWithDodgingContrib):
 
     published_settings = {
-        "on": {"datatype": "boolean", "settable": True},
+        "relay_on": {"datatype": "boolean", "settable": True},
     }
 
     job_name = "relay"
@@ -21,10 +21,10 @@ class Relay(BackgroundJobWithDodgingContrib):
         super().__init__(unit=unit, experiment=experiment, plugin_name="relay")
         if start_on:
             self.duty_cycle = 100
-            self.on = True
+            self.relay_on = True
         else:
             self.duty_cycle = 0
-            self.on = False
+            self.relay_on = False
 
         self.pwm_pin = PWM_TO_PIN[config.get("PWM_reverse", "relay")]
         # looks at config.ini/configuration on UI to match
@@ -36,39 +36,39 @@ class Relay(BackgroundJobWithDodgingContrib):
         )  # since we also go 100% high or 0% low, we don't need hz.
         self.pwm.lock()
 
-    def set_on(self, value: bool):
-        if value == self.on:
+    def set_relay_on(self, value: bool):
+        if value == self.relay_on:
             return
         if value:
             self.set_duty_cycle(100)
-            self.on = True
+            self.relay_on = True
         else:
             self.set_duty_cycle(0)
-            self.on = False
+            self.relay_on = False
 
     def set_duty_cycle(self, new_duty_cycle: float):
         self.duty_cycle = new_duty_cycle
         self.pwm.change_duty_cycle(self.duty_cycle)
 
     def on_init_to_ready(self):
-        self.logger.debug(f"Starting relay {'ON' if self.on else 'OFF'}.")
+        self.logger.debug(f"Starting relay {'ON' if self.relay_on else 'OFF'}.")
         self.pwm.start(self.duty_cycle)
 
     def on_ready_to_sleeping(self):
-        self.set_on(False)
+        self.set_relay_on(False)
 
     def on_sleeping_to_ready(self):
-        self.set_on(True)
+        self.set_relay_on(True)
 
     def on_disconnected(self):
-        self.set_on(False)
+        self.set_relay_on(False)
         self.pwm.cleanup()
 
     def action_to_do_before_od_reading(self):
-        self.set_on(False)
+        self.set_relay_on(False)
 
     def action_to_do_after_od_reading(self):
-        self.set_on(True)
+        self.set_relay_on(True)
 
 
 import click

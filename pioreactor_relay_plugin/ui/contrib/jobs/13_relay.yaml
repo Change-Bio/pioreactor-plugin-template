@@ -5,10 +5,10 @@ display: true  # true to display on the /Pioreactors card
 source: pioreactor_relay_plugin
 description: Turn your add-on (light source, pump) on or off.
 published_settings:
-  - key: on   # as defined in Python
+  - key: relay_on   # as defined in Python
     unit:
-    label: Relay on # human readable name
-    description: 
+    label: Relay # human readable name
+    description: Turn the relay on/off
     type: boolean  # one of numeric, boolean, text
-    default: null
+    default: true
     display: true # true to display on the /Pioreactors card
