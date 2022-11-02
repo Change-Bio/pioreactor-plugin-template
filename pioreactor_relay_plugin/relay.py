@@ -4,10 +4,10 @@ from pioreactor.hardware import PWM_TO_PIN
 from pioreactor.utils.pwm import PWM
 from pioreactor.utils import clamp
 from pioreactor.config import config
-from pioreactor.background_jobs.base import BackgroundJobWithDodging
+from pioreactor.background_jobs.base import BackgroundJobWithDodgingContrib
 from pioreactor.whoami import get_unit_name, get_latest_experiment_name
 
-class Relay(BackgroundJobWithDodging):
+class Relay(BackgroundJobWithDodgingContrib):
 
     published_settings = {
         "on": {"datatype": "boolean", "settable": True},
@@ -15,26 +15,27 @@ class Relay(BackgroundJobWithDodging):
     
     job_name="relay"
 
-    def __init__(self, hz, unit, experiment, start_on = True, **kwargs):
-        super().__init__(unit=unit, experiment=experiment)
-        self.hz = hz
-        
+    def __init__(self, unit, experiment, start_on=True):
+        super().__init__(unit=unit, experiment=experiment, plugin_name="relay")
         if start_on:
             self.duty_cycle = 100
             self.on = True
         else: 
             self.duty_cycle = 0
             self.on = False
-            
-        self.pwm_pin = PWM_TO_PIN[config.get("PWM_reverse", "relay")]
-        # looks at config.ini/configuration on UI to match 
-        # changed PWM channel 2 to "relay" on leader
-        # whatevers connected to channel 2 will turn on/off 
 
-        self.pwm = PWM(self.pwm_pin, self.hz)
+        self.pwm_pin = PWM_TO_PIN[config.get("PWM_reverse", "relay")]
+        # looks at config.ini/configuration on UI to match
+        # changed PWM channel 2 to "relay" on leader
+        # whatevers connected to channel 2 will turn on/off
+
+        self.pwm = PWM(self.pwm_pin, hz=10) # since we also go 100% high or 0% low, we don't need hz.
         self.pwm.lock()
 
-    def set_on(self, value):
+    def set_on(self, value: bool):
+        if value == self.on:
+            # noop
+            return
         if value:
             self.set_duty_cycle(100)
             self.on = True
@@ -42,11 +43,12 @@ class Relay(BackgroundJobWithDodging):
             self.set_duty_cycle(0)
             self.on = False
 
-    def set_duty_cycle(self, new_duty_cycle):
-        self.duty_cycle = float(new_duty_cycle)
+    def set_duty_cycle(self, new_duty_cycle: float):
+        self.duty_cycle = new_duty_cycle
         self.pwm.change_duty_cycle(self.duty_cycle)
 
     def on_init_to_ready(self):
+        self.logger.debug(f"Starting relay {'ON' if self.on else 'OFF'}.")
         self.pwm.start(self.duty_cycle)
 
     def on_ready_to_sleeping(self):
@@ -69,21 +71,14 @@ import click
 
 @click.command(name="relay")
 @click.option(
-    "--hz",
-    default=config.getfloat("relay", "hz"),
-    show_default=True,
-    type=click.FloatRange(1, 10_000, clamp=True),
-)
-@click.option(
     "--start-off",
     is_flag = True
 )
-def click_relay(hz, start_off):
+def click_relay(start_off):
     """
     Start the relay
     """
     job = Relay(
-        hz=hz,
         unit=get_unit_name(),
         experiment=get_latest_experiment_name(),
         start_on = not start_off
