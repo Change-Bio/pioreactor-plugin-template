@@ -32,7 +32,7 @@ class Relay(BackgroundJobWithDodgingContrib):
         # whatevers connected to channel 2 will turn on/off
 
         self.pwm = PWM(
-            self.pwm_pin, hz=10
+            self.pwm_pin, hz=10, unit=unit, experiment=experiment
         )  # since we also go 100% high or 0% low, we don't need hz.
         self.pwm.lock()
 
@@ -48,7 +48,9 @@ class Relay(BackgroundJobWithDodgingContrib):
 
     def set_duty_cycle(self, new_duty_cycle: float):
         self.duty_cycle = new_duty_cycle
-        self.pwm.change_duty_cycle(self.duty_cycle)
+
+        if hasattr(self, "pwm"):
+            self.pwm.change_duty_cycle(self.duty_cycle)
 
     def on_init_to_ready(self):
         self.logger.debug(f"Starting relay {'ON' if self.relay_on else 'OFF'}.")
