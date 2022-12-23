@@ -3,12 +3,12 @@ display_name: Relay # human readable name
 job_name: relay
 display: true  # true to display on the /Pioreactors card
 source: pioreactor_relay_plugin
-description: Turn your add-on (light source, pump) on or off.
+description: Turn your hardware add-on (switch, pump, valve) on or off.
 published_settings:
   - key: relay_on   # as defined in Python
     unit:
     label: Relay # human readable name
-    description: Turn the relay on/off
+    description: Switch the power supply to the relay on/off.
     type: boolean  # one of numeric, boolean, text
     default: null
     display: true # true to display on the /Pioreactors card

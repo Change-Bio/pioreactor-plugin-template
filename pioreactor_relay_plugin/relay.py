@@ -77,13 +77,18 @@ import click
 
 
 @click.command(name="relay")
-@click.option("--start-off", is_flag=True)
-def click_relay(start_off):
+@click.option(
+    "-s",
+    "--start-on",
+    default=config.getint("relay.config", "start_on", fallback=1),
+    type=click.BOOL,
+)
+def click_relay(start_on: bool):
     """
     Start the relay
     """
     job = Relay(
-        unit=get_unit_name(), experiment=get_latest_experiment_name(), start_on=not start_off
+        unit=get_unit_name(), experiment=get_latest_experiment_name(), start_on=bool(start_on)
     )
     job.block_until_disconnected()
 
