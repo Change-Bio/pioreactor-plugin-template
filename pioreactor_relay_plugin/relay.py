@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import annotations
 
+import click
 from pioreactor.background_jobs.base import BackgroundJobWithDodgingContrib
 from pioreactor.config import config
 from pioreactor.hardware import PWM_TO_PIN
@@ -36,9 +37,14 @@ class Relay(BackgroundJobWithDodgingContrib):
         )  # since we also go 100% high or 0% low, we don't need hz.
         self.pwm.lock()
 
+    def on_init_to_ready(self):
+        self.logger.debug(f"Starting relay {'ON' if self.relay_on else 'OFF'}.")
+        self.pwm.start(self.duty_cycle)
+
     def set_relay_on(self, value: bool):
         if value == self.relay_on:
             return
+
         if value:
             self.set_duty_cycle(100)
             self.relay_on = True
@@ -51,10 +57,6 @@ class Relay(BackgroundJobWithDodgingContrib):
 
         if hasattr(self, "pwm"):
             self.pwm.change_duty_cycle(self.duty_cycle)
-
-    def on_init_to_ready(self):
-        self.logger.debug(f"Starting relay {'ON' if self.relay_on else 'OFF'}.")
-        self.pwm.start(self.duty_cycle)
 
     def on_ready_to_sleeping(self):
         self.set_relay_on(False)
@@ -71,9 +73,6 @@ class Relay(BackgroundJobWithDodgingContrib):
 
     def action_to_do_after_od_reading(self):
         self.set_relay_on(True)
-
-
-import click
 
 
 @click.command(name="relay")
