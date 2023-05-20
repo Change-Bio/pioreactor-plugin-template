@@ -22,10 +22,10 @@ class Relay(BackgroundJobWithDodgingContrib):
         super().__init__(unit=unit, experiment=experiment, plugin_name="relay")
         if start_on:
             self.duty_cycle = 100
-            self.relay_on = True
+            self.is_relay_on = True
         else:
             self.duty_cycle = 0
-            self.relay_on = False
+            self.is_relay_on = False
 
         self.pwm_pin = PWM_TO_PIN[config.get("PWM_reverse", "relay")]
         # looks at config.ini/configuration on UI to match
@@ -38,33 +38,37 @@ class Relay(BackgroundJobWithDodgingContrib):
         self.pwm.lock()
 
     def on_init_to_ready(self):
-        self.logger.debug(f"Starting relay {'ON' if self.relay_on else 'OFF'}.")
+        super().on_init_to_ready()
+        self.logger.debug(f"Starting relay {'ON' if self.is_relay_on else 'OFF'}.")
         self.pwm.start(self.duty_cycle)
 
     def set_relay_on(self, value: bool):
-        if value == self.relay_on:
+        if value == self.is_relay_on:
             return
 
         if value:
-            self.set_duty_cycle(100)
-            self.relay_on = True
+            self._set_duty_cycle(100)
+            self.is_relay_on = True
         else:
-            self.set_duty_cycle(0)
-            self.relay_on = False
+            self._set_duty_cycle(0)
+            self.is_relay_on = False
 
-    def set_duty_cycle(self, new_duty_cycle: float):
+    def _set_duty_cycle(self, new_duty_cycle: float):
         self.duty_cycle = new_duty_cycle
 
         if hasattr(self, "pwm"):
             self.pwm.change_duty_cycle(self.duty_cycle)
 
     def on_ready_to_sleeping(self):
+        super().on_ready_to_sleeping()
         self.set_relay_on(False)
 
     def on_sleeping_to_ready(self):
+        super().on_sleeping_to_ready()
         self.set_relay_on(True)
 
     def on_disconnected(self):
+        super().on_disconnected()
         self.set_relay_on(False)
         self.pwm.cleanup()
 
