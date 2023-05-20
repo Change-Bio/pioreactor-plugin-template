@@ -5,7 +5,7 @@ display: true
 source: pioreactor_relay_plugin
 description: Turn your hardware add-on (switch, pump, valve) on or off.
 published_settings:
-  - key: relay_on
+  - key: is_relay_on
     unit:
     label: Relay on # human readable name
     description: Switch the power supply to the relay on/off.

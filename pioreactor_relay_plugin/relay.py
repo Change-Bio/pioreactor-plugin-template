@@ -13,7 +13,7 @@ from pioreactor.whoami import get_unit_name
 class Relay(BackgroundJobWithDodgingContrib):
 
     published_settings = {
-        "relay_on": {"datatype": "boolean", "settable": True},
+        "is_relay_on": {"datatype": "boolean", "settable": True},
     }
 
     job_name = "relay"
