@@ -33,7 +33,7 @@ class Relay(BackgroundJobWithDodgingContrib):
 
         self.pwm = PWM(
             self.pwm_pin, hz=10, unit=unit, experiment=experiment
-        )  # since we also go 100% high or 0% low, we don't need hz.
+        )  # since we also go 100% high or 0% low, we don't need hz, but some systems don't allow a very low hz (like hz=1).
         self.pwm.lock()
 
     def on_init_to_ready(self):
