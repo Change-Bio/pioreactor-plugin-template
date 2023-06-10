@@ -38,7 +38,7 @@ jobs:
         run: wget https://raw.githubusercontent.com/Pioreactor/pioreactor/master/config.dev.ini
 
       - name: Run tests
-        run: pytest
+        run: pytest pioreactor_relay_plugin/test_relay.py
         env:
           TESTING: 1
           TMPDIR: /tmp/
