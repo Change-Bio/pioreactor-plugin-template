@@ -11,7 +11,6 @@ from pioreactor.whoami import get_unit_name
 
 
 class Relay(BackgroundJobWithDodgingContrib):
-
     published_settings = {
         "is_relay_on": {"datatype": "boolean", "settable": True},
     }
@@ -42,7 +41,7 @@ class Relay(BackgroundJobWithDodgingContrib):
         self.logger.debug(f"Starting relay {'ON' if self.is_relay_on else 'OFF'}.")
         self.pwm.start(self.duty_cycle)
 
-    def set_relay_on(self, value: bool):
+    def set_is_relay_on(self, value: bool):
         if value == self.is_relay_on:
             return
 
@@ -61,22 +60,22 @@ class Relay(BackgroundJobWithDodgingContrib):
 
     def on_ready_to_sleeping(self):
         super().on_ready_to_sleeping()
-        self.set_relay_on(False)
+        self.set_is_relay_on(False)
 
     def on_sleeping_to_ready(self):
         super().on_sleeping_to_ready()
-        self.set_relay_on(True)
+        self.set_is_relay_on(True)
 
     def on_disconnected(self):
         super().on_disconnected()
-        self.set_relay_on(False)
+        self.set_is_relay_on(False)
         self.pwm.cleanup()
 
     def action_to_do_before_od_reading(self):
-        self.set_relay_on(False)
+        self.set_is_relay_on(False)
 
     def action_to_do_after_od_reading(self):
-        self.set_relay_on(True)
+        self.set_is_relay_on(True)
 
 
 @click.command(name="relay")
@@ -91,7 +90,9 @@ def click_relay(start_on: bool):
     Start the relay
     """
     job = Relay(
-        unit=get_unit_name(), experiment=get_latest_experiment_name(), start_on=bool(start_on)
+        unit=get_unit_name(),
+        experiment=get_latest_experiment_name(),
+        start_on=bool(start_on),
     )
     job.block_until_disconnected()
 
