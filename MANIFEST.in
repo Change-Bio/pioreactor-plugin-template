@@ -1,2 +1,6 @@
-include pioreactor_relay_plugin/additional_config.ini
-recursive-include pioreactor_relay_plugin/ui *.yaml
+# recursive-include <PLUGIN_NAME>/ui/ *.yaml
+# include <PLUGIN_NAME>/additional_config.ini
+# include <PLUGIN_NAME>/additional_sql.sql
+# include <PLUGIN_NAME>/post_install.sh
+# include <PLUGIN_NAME>/pre_uninstall.sh
+# include <PLUGIN_NAME>/LEADER_ONLY

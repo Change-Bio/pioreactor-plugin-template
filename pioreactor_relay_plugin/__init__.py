@@ -1,1 +1,0 @@
-from pioreactor_relay_plugin.relay import click_relay

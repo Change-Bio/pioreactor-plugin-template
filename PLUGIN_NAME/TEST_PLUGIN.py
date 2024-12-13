@@ -1,4 +1,9 @@
 # -*- coding: utf-8 -*-
+
+
+# Put testing code in here, for example:
+
+```
 from __future__ import annotations
 
 from time import sleep
@@ -61,3 +66,4 @@ def test_action_to_do_after_od_reading():
     with Relay("unit", "test_action_to_do_after_od_reading", start_on=True) as r:
         r.action_to_do_after_od_reading()
         assert r.is_relay_on is True
+```

@@ -1,21 +1,20 @@
 # -*- coding: utf-8 -*-
-from __future__ import annotations
-
-from setuptools import find_packages
-from setuptools import setup
-
+from setuptools import setup, find_packages
 
 setup(
-    name="pioreactor-relay-plugin",
-    version="0.4.2",
-    license="MIT",
-    description="Turn the PWM channels into a simple on/off relay for additional hardware.",
+    name="<DISTRIBUTION-NAME (with dashes)>",
+    version="<VERSION>",
+    license_files = ('LICENSE.txt',),
+    description="<DESCRIPTION OF PLUGIN>",
     long_description=open("README.md").read(),
     long_description_content_type="text/markdown",
-    author_email="cam@pioreactor.com",
-    author="Kelly Tran, Pioreactor",
-    url="https://github.com/CamDavidsonPilon/pioreactor-relay-plugin",
+    author_email="<EMAIL>",
+    author="<NAME>",
+    url="<A HOMEPAGE>",
     packages=find_packages(),
     include_package_data=True,
-    entry_points={"pioreactor.plugins": "pioreactor_relay_plugin = pioreactor_relay_plugin"},
+    install_requires=[], # PROVIDE OTHER PYTHON REQUIREMENTS, ex: "pioreactor>=23.6.0", "numpy>=1.0"
+    entry_points={
+        "pioreactor.plugins": "<PLUGIN_NAME> = <PLUGIN_NAME>"
+    },
 )
